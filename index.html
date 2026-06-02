@@ -14,13 +14,13 @@
         <div class="home-overlay"></div>
 
         <div class="home-content">
-            <div style="font-size: 20px;"class="home-title">
+            <div style="font-size: 20px;" class="home-title">
                 防災シミュレーター<br>能登半島地震の経験から考える避難・健康・共助
             </div>
 
             <p class="home-description">
                 このゲームは災害医療の教育を目的とする試作版です。実際の災害時には自治体・気象庁・消防・医療機関などの情報に従う必要があります。<br>
-               被災経験を想起してつらくなった場合は無理せずプレイを中断してください。 <br>
+                被災経験を想起してつらくなった場合は無理せずプレイを中断してください。 <br>
                 <span style="font-size:0.8rem;">※音が出ますので十分ご注意ください</span>
             </p>
 
@@ -33,17 +33,16 @@
             </div>
         </div>
     </div>
- </div>
+
     <div id="select-screen" class="screen">
         <div class="nav-header">
-            <button class="back-btn" onclick="Game.toHome()"></button>
+            <button class="back-btn" onclick="Game.toHome()">←</button>
             <span class="nav-title">シナリオ選択</span>
             <div style="width:24px;"></div>
         </div>
-        <div class="stage-list" id="stage-list">
-            </div>
+        <div class="stage-list" id="stage-list"></div>
     </div>
-    <!-- ▼追加：ブリーフィング（状況説明）画面 -->
+
     <div id="briefing-screen" class="screen">
         <div class="nav-header">
             <button class="back-btn" onclick="Game.toSelect()">←</button>
@@ -51,8 +50,7 @@
             <div style="width:24px;"></div>
         </div>
         <div class="briefing-content" id="briefing-content">
-            <!-- JSからテキストが挿入されます -->
-        </div>
+            </div>
         <div style="padding: 20px; text-align: center;">
             <button class="start-btn" onclick="Game.startSceneAfterBriefing()">ミッション開始</button>
         </div>
@@ -90,10 +88,7 @@
         <div id="control-panel">
             <div class="speaker-tag" id="speaker">SYSTEM</div>
             <div id="dialogue-text">...</div>
-            <div id="options-list"></div>
-        </div>
-    </div>
-    -- ▼追加：制限時間タイマーUI -->
+            
             <div id="timer-container" style="display:none; margin-bottom: 15px;">
                 <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:bold; color:var(--accent);">
                     <span>制限時間</span>
@@ -103,6 +98,10 @@
                     <div id="timer-bar" style="background:var(--warning); height:100%; width:100%; transition:width 1s linear;"></div>
                 </div>
             </div>
+
+            <div id="options-list"></div>
+        </div>
+    </div>
 
     <div id="result-screen" class="screen">
         <div class="nav-header">
