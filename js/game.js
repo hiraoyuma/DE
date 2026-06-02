@@ -1,9 +1,13 @@
 const Game = {
     state: { hp: 100, sanit: 100, trust: 50, history: [], flags: {} },
     currentStageKey: null,
+    currentSceneId: null, // 現在のシーンIDを保持
     clearedStages: [],
     
-    // 画像プレースホルダー
+    // タイマー関連変数
+    timerInterval: null,
+    timeLeft: 15,
+
     images: {
         black: "https://placehold.co/600x400/212121/ffffff?text=..."
     },
@@ -17,13 +21,11 @@ const Game = {
     toHome() { this.switchScreen('home-screen'); },
     
     toSelect() {
-        // ボタンクリック時にAudioコンテキストを再開/初期化
         if(AudioSys && AudioSys.ctx && AudioSys.ctx.state === 'suspended'){
             AudioSys.ctx.resume();
         } else {
             AudioSys.init();
         }
-        
         this.renderStageList();
         this.switchScreen('select-screen');
     },
@@ -57,17 +59,73 @@ const Game = {
         this.state = { hp: 100, sanit: 100, trust: 50, history: [], flags: {} };
         this.updateStatusUI();
 
-        // 2周目バグ修正：コントロールパネルの「全画面モード」を解除して元のサイズに戻す
         document.getElementById('control-panel').classList.remove('result-mode');
-
-        // 連打防止のロックも解除しておく
         this.isProcessing = false;
 
+        // ▼変更：ゲーム開始前にブリーフィング画面を表示する
+        const bContent = document.getElementById('briefing-content');
+        bContent.innerHTML = stageData.briefing || "（状況説明がありません）";
+        this.switchScreen('briefing-screen');
+    },
+
+    // ▼追加：ブリーフィング後のミッション開始処理
+    startSceneAfterBriefing() {
         this.switchScreen('game-screen');
-        this.renderScene(stageData.startScene);
+        this.renderScene(ScenarioData[this.currentStageKey].startScene);
+    },
+
+    // ▼追加：タイマー管理処理
+    startTimer() {
+        this.clearTimer();
+        this.timeLeft = 15;
+        const timerContainer = document.getElementById('timer-container');
+        timerContainer.style.display = 'block';
+        this.updateTimerUI();
+
+        this.timerInterval = setInterval(() => {
+            this.timeLeft--;
+            this.updateTimerUI();
+            if (this.timeLeft <= 0) {
+                this.handleTimeout();
+            }
+        }, 1000);
+    },
+
+    clearTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+        document.getElementById('timer-container').style.display = 'none';
+    },
+
+    updateTimerUI() {
+        const bar = document.getElementById('timer-bar');
+        const text = document.getElementById('timer-text');
+        if(bar) bar.style.width = (this.timeLeft / 15 * 100) + '%';
+        if(text) text.innerText = `${this.timeLeft}秒`;
+    },
+
+    // ▼追加：時間切れ時の処理
+    handleTimeout() {
+        this.clearTimer();
+        if (this.isProcessing) return;
+        
+        const stageData = ScenarioData[this.currentStageKey];
+        const scene = stageData.scenes[this.currentSceneId];
+        
+        // 誤答（isGoodがfalse）の選択肢を探して自動選択させる
+        let wrongOpt = scene.options.find(opt => !opt.fb.isGood);
+        if (!wrongOpt) wrongOpt = scene.options[0]; // 万が一誤答がない場合のフェールセーフ
+        
+        // タイムアウトフラグ (isTimeout = true) をつけてresolveへ渡す
+        this.resolveOption(wrongOpt, true);
     },
 
     renderScene(sceneId) {
+        this.currentSceneId = sceneId; // 現在のシーンを保存
+        this.clearTimer(); // 新しいシーンに入ったらタイマーをリセット
+
         const stageData = ScenarioData[this.currentStageKey];
         const scene = stageData.scenes[sceneId];
 
@@ -113,6 +171,8 @@ const Game = {
                 btn.onclick = () => this.resolveOption(opt);
                 optsArea.appendChild(btn);
             });
+            // 選択肢がある場合のみタイマーを開始
+            this.startTimer();
         } else if (scene.next) {
             const btn = document.createElement('div');
             btn.className = 'option-btn';
@@ -122,9 +182,11 @@ const Game = {
         }
     },
 
-    resolveOption(opt) {
+    // 引数に isTimeout フラグを追加
+    resolveOption(opt, isTimeout = false) {
         if (this.isProcessing) return;
-        this.isProcessing = true; // タイポ修正 (tru -> true)
+        this.isProcessing = true;
+        this.clearTimer(); // 選択した瞬間にタイマーを止める
 
         if(opt.hp) this.state.hp += opt.hp;
         if(opt.sanit) this.state.sanit += opt.sanit;
@@ -132,31 +194,81 @@ const Game = {
         this.updateStatusUI();
 
         if (opt.fb) {
-            this.state.history.push({ choice: opt.text, fb: opt.fb });
+            // 履歴に保存（時間切れの場合は「【時間切れ】」をプレフィックスにつける）
+            this.state.history.push({ choice: isTimeout ? `【時間切れ】 ${opt.text}` : opt.text, fb: opt.fb });
             
-            // 3択（GOOD / WARNING / BAD）の判定
+            // 判定とバッジの初期化
             let fbType = 'bad';
             let msg = "BAD CHOICE...";
             let se = 'bad';
+            let badgeColor = '#d32f2f';
+            let badgeText = '危険';
 
-            if (opt.fb.isWarning) {
+            // 時間切れの場合は強制的にCAUTIONスタイル（オレンジ）
+            if (isTimeout || opt.fb.isWarning) {
                 fbType = 'warning';
-                msg = "CAUTION!";
-                se = 'bad'; // 必要に応じて変更可能
+                msg = isTimeout ? "TIME UP!" : "CAUTION!";
+                se = 'bad';
+                badgeColor = '#f57c00';
+                badgeText = isTimeout ? '時間切れ' : '注意';
             } else if (opt.fb.isGood) {
                 fbType = 'good';
                 msg = "GOOD CHOICE!";
                 se = 'good';
+                badgeColor = '#2e7d32';
+                badgeText = '正解';
             }
 
             AudioSys.playSE(se);
             this.showToast(msg, fbType); 
-        }
 
-        setTimeout(() => {
-            this.renderScene(opt.next);
-            this.isProcessing = false; // ロック解除
-        }, 500); 
+            // ▼変更：選択直後のインライン・フィードバック画面生成
+            const optsArea = document.getElementById('options-list');
+            let html = `
+                <div class="fb-card ${fbType}" style="margin-top:0; padding:15px; box-shadow:none; border:2px solid ${badgeColor};">
+                    <div class="fb-header">
+                        <span>解説</span>
+                        <span class="fb-badge" style="background:${badgeColor}">${badgeText}</span>
+                    </div>
+                    <div class="fb-text" style="font-weight:bold; margin-bottom:10px;">${opt.fb.reason}</div>
+            `;
+
+            // 正解(isGood:true)以外の場合は、もし間違っていたら＆深掘り知識もすぐに表示する
+            if (!opt.fb.isGood) {
+                if (opt.fb.ifWrong) {
+                    html += `
+                        <span class="fb-section-title" style="color:#d32f2f;">もし間違っていたら...</span>
+                        <div class="fb-text">${opt.fb.ifWrong}</div>
+                    `;
+                }
+                if (opt.fb.knowledge) {
+                    html += `
+                        <div class="fb-knowledge" style="margin-top:10px;">
+                            <div class="fb-k-title" style="font-weight:bold; color:var(--primary);">深掘り知識</div>
+                            <div class="fb-text">${opt.fb.knowledge}</div>
+                        </div>
+                    `;
+                }
+            }
+            html += `</div>`;
+            
+            // 次へ進むためのボタン
+            html += `<div class="option-btn" style="text-align:center; background:var(--header-bg); color:white; margin-top:10px;" id="btn-next-scene">次のシーンへ</div>`;
+            
+            optsArea.innerHTML = html;
+            
+            document.getElementById('btn-next-scene').onclick = () => {
+                this.isProcessing = false;
+                this.renderScene(opt.next);
+            };
+
+        } else {
+            // FBがない場合（次へ進むだけのシーンなど）
+            setTimeout(() => {
+                this.renderScene(opt.next);
+                this.isProcessing = false;
+            }, 300); 
+        }
     },
 
     updateStatusUI() {
@@ -168,7 +280,6 @@ const Game = {
         document.getElementById('gauge-trust').style.width = Math.max(0, Math.min(100, this.state.trust)) + '%';
     },
 
-    // 3択対応に伴い引数を type に変更
     showToast(msg, type) {
         const t = document.getElementById('toast');
         t.innerText = msg;
@@ -197,21 +308,20 @@ const Game = {
         const list = document.getElementById('feedback-list');
         list.innerHTML = '';
 
-        // フィードバックの生成
+        // リザルトのフィードバック一覧（直後に出した内容の振り返りとしてそのまま残します）
         this.state.history.forEach((h, i) => {
-            
-            // カードの色とバッジを3択で出し分ける
             let cardClass = 'bad';
-            let badgeColor = '#d32f2f'; // 赤
+            let badgeColor = '#d32f2f'; 
             let badgeText = '危険';
-
-            if (h.fb.isWarning) {
+            
+            // 時間切れ（historyのchoice文字列で判定）または Warning の場合
+            if (h.choice.includes("【時間切れ】") || h.fb.isWarning) {
                 cardClass = 'warning';
-                badgeColor = '#f57c00'; // オレンジ（注意）
-                badgeText = '注意';
+                badgeColor = '#f57c00'; 
+                badgeText = h.choice.includes("【時間切れ】") ? '時間切れ' : '注意';
             } else if (h.fb.isGood) {
                 cardClass = 'good';
-                badgeColor = '#2e7d32'; // 緑
+                badgeColor = '#2e7d32'; 
                 badgeText = '正解';
             }
 
@@ -230,7 +340,6 @@ const Game = {
                 <div class="fb-text">${h.fb.reason}</div>
             `;
 
-            // isGoodではない（＝BADかWARNING）かつ ifWrongがある場合のみ表示
             if (!h.fb.isGood && h.fb.ifWrong) {
                 html += `
                     <span class="fb-section-title" style="color:#d32f2f;">もし間違っていたら...</span>
@@ -250,7 +359,7 @@ const Game = {
             list.appendChild(div);
         });
 
-        // 参考文献リストの表示
+        // 参考文献
         const refDiv = document.createElement('div');
         refDiv.className = 'fb-card';
         refDiv.style.borderLeft = "5px solid #546e7a"; 
@@ -262,9 +371,6 @@ const Game = {
                     <li>内閣府. "避難所におけるトイレの確保・管理ガイドライン".</li>
                     <li>厚生労働省. "災害時における健康危機管理".</li>
                     <li>現地医師・薬剤師へのヒアリング調査 (2024)</li>
-                     <li>令和６年奥能登豪雨 (北國新聞社 2024)</li>
-                     <li>令和６年能登半島地震（2024）</li>
-                    <li>珠洲地震 (北國新聞社 2023)</li>
                     <li>https://www.cainz.com/kurashare/product-lists/2987</li>
                 </ul>
             </div>
