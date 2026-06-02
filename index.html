@@ -43,6 +43,20 @@
         <div class="stage-list" id="stage-list">
             </div>
     </div>
+    <!-- ▼追加：ブリーフィング（状況説明）画面 -->
+    <div id="briefing-screen" class="screen">
+        <div class="nav-header">
+            <button class="back-btn" onclick="Game.toSelect()">←</button>
+            <span class="nav-title">状況説明</span>
+            <div style="width:24px;"></div>
+        </div>
+        <div class="briefing-content" id="briefing-content">
+            <!-- JSからテキストが挿入されます -->
+        </div>
+        <div style="padding: 20px; text-align: center;">
+            <button class="start-btn" onclick="Game.startSceneAfterBriefing()">ミッション開始</button>
+        </div>
+    </div>
 
     <div id="game-screen" class="screen">
         <header>
@@ -79,6 +93,16 @@
             <div id="options-list"></div>
         </div>
     </div>
+    -- ▼追加：制限時間タイマーUI -->
+            <div id="timer-container" style="display:none; margin-bottom: 15px;">
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:bold; color:var(--accent);">
+                    <span>制限時間</span>
+                    <span id="timer-text">15秒</span>
+                </div>
+                <div style="background:#e0e0e0; height:6px; border-radius:3px; overflow:hidden; margin-top:4px;">
+                    <div id="timer-bar" style="background:var(--warning); height:100%; width:100%; transition:width 1s linear;"></div>
+                </div>
+            </div>
 
     <div id="result-screen" class="screen">
         <div class="nav-header">
