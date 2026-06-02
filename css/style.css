@@ -251,3 +251,14 @@ header { background: var(--header-bg); color: white; padding: 10px 15px; z-index
 .toast-good { background: var(--success); }
 .toast-bad { background: var(--accent); }
 .toast-warning { background: var(--warning); color: white; } /* 追加: △の時のポップアップ色 */
+
+-- ▼追加：制限時間タイマーUI -->
+            <div id="timer-container" style="display:none; margin-bottom: 15px;">
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:bold; color:var(--accent);">
+                    <span>制限時間</span>
+                    <span id="timer-text">15秒</span>
+                </div>
+                <div style="background:#e0e0e0; height:6px; border-radius:3px; overflow:hidden; margin-top:4px;">
+                    <div id="timer-bar" style="background:var(--warning); height:100%; width:100%; transition:width 1s linear;"></div>
+                </div>
+            </div>
