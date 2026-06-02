@@ -1,7 +1,7 @@
 const ScenarioData = {
     'stage1': {
-        title: "STAGE 1: 発災・避難（超急性期）",
-        desc: "発災〜24時間。生死を分ける即時判断。",
+        title: "STAGE 1: 〔発災・避難〕　超急性期：発災直後～２４時間",
+        desc: "発災直後の身の安全、津波避難について考えます",
         startScene: 's1_1',
         scenes: {
             's1_1': {
@@ -105,8 +105,8 @@ const ScenarioData = {
     },
 
     'stage2': {
-        title: "STAGE 2: 避難生活・混乱（急性期〜亜急性期）",
-        desc: "3日目〜数週間。劣悪な環境での健康維持と孤立防止。",
+        title: "STAGE 2: 〔避難生活・混乱〕　急性期〜亜急性期：３日目～数週間",
+        desc: "避難生活の中で、水、食事、トイレ、感染対策について考えます",
         startScene: 's2_1',
         scenes: {
             's2_1': {
@@ -199,8 +199,8 @@ const ScenarioData = {
         }
     },
     'stage3': {
-        title: "STAGE 3: 生活再建・平穏（慢性期〜）",
-        desc: "1ヶ月後〜。心のケア、自治、そして新しい生活へ。",
+        title: "STAGE 3: 〔生活再建・平穏〕　慢性期：一か月後",
+        desc: "1ヶ月後〜。心のケア、地域での支えあい、長期的な支援について考えます",
         startScene: 's3_1',
         scenes: {
             's3_1': {
