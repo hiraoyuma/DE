@@ -151,21 +151,18 @@ header { background: var(--header-bg); color: white; padding: 10px 15px; z-index
 /* --- Visual Stage --- */
 #visual-stage { 
     flex-grow: 1; 
-    /* 画像が勝手に枠を広げるのを防ぎ、残りの空間だけを使うようにする */
     height: 0; 
     position: relative; 
     background: #333; 
-    overflow: hidden; /* はみ出した画像を確実に切り取る */
+    overflow: hidden; 
 }
 
-/* 画像の基本状態：最初は100%（全体）で表示 */
 #scene-img { 
     width: 100%; 
     height: 100%; 
     object-fit: cover; 
     opacity: 0; 
     filter: brightness(0.5);
-    /* 変形の基点を中央に固定し、12秒かけてじわじわ動かす */
     transform-origin: center center;
     transform: scale(1.0); 
     transition: opacity 0.5s, transform 12s ease-out; 
@@ -174,7 +171,6 @@ header { background: var(--header-bg); color: white; padding: 10px 15px; z-index
 #scene-img.zoom { transform: scale(1.15); }
 #scene-img.shake { animation: shake 0.5s infinite; }
 
-/* 画面中央の警告テキスト（BAD時） */
 .overlay-alert {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%;
     background: rgba(211, 47, 47, 0.9); color: white; padding: 20px 0; text-align: center;
@@ -182,7 +178,6 @@ header { background: var(--header-bg); color: white; padding: 10px 15px; z-index
     animation: flash 1s infinite alternate;
 }
 
-/* 画面中央の警告テキスト（WARNING時） */
 .overlay-warning {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%;
     background: rgba(255, 152, 0, 0.8); color: rgb(85, 87, 210); padding: 20px 0; text-align: center;
@@ -195,11 +190,8 @@ header { background: var(--header-bg); color: white; padding: 10px 15px; z-index
     background: var(--surface-color); 
     border-radius: 20px 20px 0 0; 
     padding: 20px;
-    
-    /* 選択肢エリアの高さを約半分(45%)にガッチリ固定し、潰されないようにする */
     flex-shrink: 0;
     height: 45%; 
-    
     display: flex; 
     flex-direction: column;
     position: relative; 
@@ -231,7 +223,7 @@ header { background: var(--header-bg); color: white; padding: 10px 15px; z-index
 }
 .fb-card.good { border-left-color: var(--success); }
 .fb-card.bad { border-left-color: var(--accent); }
-.fb-card.warning { border-left-color: var(--warning); background-color: #fff3e0; } /* 追加: △の時のカード色 */
+.fb-card.warning { border-left-color: var(--warning); background-color: #fff3e0; } 
 
 .fb-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: bold; }
 .fb-badge { font-size: 0.7rem; color: white; padding: 3px 8px; border-radius: 4px; }
@@ -250,15 +242,18 @@ header { background: var(--header-bg); color: white; padding: 10px 15px; z-index
 #toast.show { opacity: 1; }
 .toast-good { background: var(--success); }
 .toast-bad { background: var(--accent); }
-.toast-warning { background: var(--warning); color: white; } /* 追加: △の時のポップアップ色 */
+.toast-warning { background: var(--warning); color: white; } 
 
--- ▼追加：制限時間タイマーUI -->
-            <div id="timer-container" style="display:none; margin-bottom: 15px;">
-                <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:bold; color:var(--accent);">
-                    <span>制限時間</span>
-                    <span id="timer-text">15秒</span>
-                </div>
-                <div style="background:#e0e0e0; height:6px; border-radius:3px; overflow:hidden; margin-top:4px;">
-                    <div id="timer-bar" style="background:var(--warning); height:100%; width:100%; transition:width 1s linear;"></div>
-                </div>
-            </div>
+/* ▼追加：状況説明（ブリーフィング）画面用のテキストスタイル */
+.briefing-content {
+    padding: 30px; 
+    font-size: 1.1rem; 
+    line-height: 1.8; 
+    color: var(--text-main);
+    flex-grow: 1;
+    overflow-y: auto;
+    background: white;
+    margin: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
