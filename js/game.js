@@ -62,19 +62,19 @@ const Game = {
         document.getElementById('control-panel').classList.remove('result-mode');
         this.isProcessing = false;
 
-        // ▼変更：ゲーム開始前にブリーフィング画面を表示する
+        // ゲーム開始前にブリーフィング画面を表示する
         const bContent = document.getElementById('briefing-content');
         bContent.innerHTML = stageData.briefing || "（状況説明がありません）";
         this.switchScreen('briefing-screen');
     },
 
-    // ▼追加：ブリーフィング後のミッション開始処理
+    // ブリーフィング後のミッション開始処理
     startSceneAfterBriefing() {
         this.switchScreen('game-screen');
         this.renderScene(ScenarioData[this.currentStageKey].startScene);
     },
 
-    // ▼追加：タイマー管理処理
+    // タイマー管理処理
     startTimer() {
         this.clearTimer();
         this.timeLeft = 15;
@@ -106,7 +106,7 @@ const Game = {
         if(text) text.innerText = `${this.timeLeft}秒`;
     },
 
-    // ▼追加：時間切れ時の処理
+    // 時間切れ時の処理
     handleTimeout() {
         this.clearTimer();
         if (this.isProcessing) return;
@@ -222,7 +222,7 @@ const Game = {
             AudioSys.playSE(se);
             this.showToast(msg, fbType); 
 
-            // ▼変更：選択直後のインライン・フィードバック画面生成
+            // 選択直後のインライン・フィードバック画面生成
             const optsArea = document.getElementById('options-list');
             let html = `
                 <div class="fb-card ${fbType}" style="margin-top:0; padding:15px; box-shadow:none; border:2px solid ${badgeColor};">
@@ -360,6 +360,10 @@ const Game = {
         });
 
         // 参考文献
+        const refDiv = document.createElement('div');
+        refDiv.className = 'fb-card';
+        refDiv.style.borderLeft = "5px solid #546e7a"; 
+        refDiv.innerHTML = `
             <div class="fb-header" style="color:#546e7a;">📚 参考資料・出典</div>
             <div class="fb-text" style="font-size:0.8rem; line-height:1.8;">
                 <ul style="padding-left:20px; margin:0;">
@@ -376,16 +380,6 @@ const Game = {
                     <li>・令和6年能登半島地震に関する報道資料</li>
                     <li>・令和6年奥能登豪雨に関する報道資料</li>
                     <li>・株式会社カインズ：防災グッズリスト（https://www.cainz.com/kurashare/product-lists/2987）</li>
-                </ul>
-            </div>
-        `;
-        list.appendChild(refDiv);
-    }
-};
-
-// ゲーム初期化
-Game.init();
-                    <li>https://www.cainz.com/kurashare/product-lists/2987</li>
                 </ul>
             </div>
         `;
