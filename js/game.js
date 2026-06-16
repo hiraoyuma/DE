@@ -360,29 +360,31 @@ const Game = {
         });
 
         // 参考文献
-        const refDiv = document.createElement('div');
-        refDiv.className = 'fb-card';
-        refDiv.style.borderLeft = "5px solid #546e7a"; 
-        refDiv.innerHTML = `
             <div class="fb-header" style="color:#546e7a;">📚 参考資料・出典</div>
             <div class="fb-text" style="font-size:0.8rem; line-height:1.8;">
                 <ul style="padding-left:20px; margin:0;">
-                    <li>参考資料・出典</li>
-                    <li>公的資料・専門資料/li>
-                    <li>・内閣府：避難所におけるトイレの確保・管理ガイドライン/li>
+                    <li><b>公的資料・専門資料</b></li>
+                    <li>・内閣府：避難所におけるトイレの確保・管理ガイドライン</li>
                     <li>・厚生労働省：災害時における健康危機管理</li>
-                    <li>・東北大学大学院医学系研究科公衆衛生学分野：被災者の生活支援・健康管理に関する資料</li>
-
-                    <li>現地ヒアリング</li>
+                    <li>・東北大学大学院：被災者の生活支援・健康管理に関する資料</li>
+                    <br>
+                    <li><b>現地ヒアリング</b></li>
                     <li>・被災地の医師・薬剤師・看護師へのヒアリング調査</li>
                     <li>・地域医療、服薬支援、避難所環境に関する聞き取り</li>
+                    <br>
+                    <li><b>報道・記録資料</b></li>
+                    <li>・令和6年能登半島地震に関する報道資料</li>
+                    <li>・令和6年奥能登豪雨に関する報道資料</li>
+                    <li>・株式会社カインズ：防災グッズリスト（https://www.cainz.com/kurashare/product-lists/2987）</li>
+                </ul>
+            </div>
+        `;
+        list.appendChild(refDiv);
+    }
+};
 
-                        <li>報道・記録資料</li>
-                        <li>・令和6年能登半島地震に関する報道資料<\li>
-                        </li>・令和6年奥能登豪雨に関する報道資料</li>
-                    <li>内閣府. "避難所におけるトイレの確保・管理ガイドライン".</li>
-                    <li>厚生労働省. "災害時における健康危機管理".</li>
-                    <li>現地医師・薬剤師へのヒアリング調査 (2024)</li>
+// ゲーム初期化
+Game.init();
                     <li>https://www.cainz.com/kurashare/product-lists/2987</li>
                 </ul>
             </div>
