@@ -25,13 +25,8 @@
             </p>
 
             <button class="start-btn home-start-btn" onclick="Game.toSelect()">開始する</button>
-
-            <div class="home-credit">
-                開発：平尾勇磨<br>
-                指導：南保英孝<br>
-                医学監修：唐島成宙
+            
             </div>
-        </div>
     </div>
 
     <div id="select-screen" class="screen">
@@ -114,7 +109,51 @@
                 <div id="rank-text" style="font-weight:bold; color:#2c3e50;"></div>
             </div>
             <div id="feedback-list"></div>
+            
             <button class="start-btn" style="width:100%; margin-top:20px;" onclick="Game.toSelect()">シナリオ選択へ</button>
+            <button class="start-btn" style="width:100%; margin-top:15px; background:#546e7a;" onclick="Game.toCredit()">クレジットを見る</button>
+            <button class="start-btn" style="width:100%; margin-top:15px; background:#d32f2f;" onclick="Game.toHome()">ゲームを終了する</button>
+        </div>
+    </div>
+
+    <div id="credit-screen" class="screen">
+        <div class="nav-header">
+            <button class="back-btn" onclick="Game.switchScreen('result-screen')">←</button>
+            <span class="nav-title">クレジット・参考資料</span>
+            <div style="width:24px;"></div>
+        </div>
+        <div class="briefing-content" style="padding: 25px; font-size: 0.95rem; background: white; flex-grow: 1; overflow-y: auto;">
+            
+            <h3 style="color:var(--primary); border-bottom: 2px solid var(--primary); padding-bottom:5px; margin-top:0;">Credits / 制作クレジット</h3>
+            <p style="line-height: 1.8;">
+                <strong>企画・開発・プログラミング：</strong>平尾勇磨<br>
+                <strong>シナリオ設計・UIデザイン：</strong>平尾勇磨<br>
+                <strong>音楽・効果音：</strong>Web Audio API（自動生成）
+            </p>
+            <p style="line-height: 1.8;">
+                <strong>開発・技術指導：</strong>南保英孝<br>
+                <strong>健康情報監修：</strong>唐島成宙
+            </p>
+
+            <h3 style="color:var(--primary); border-bottom: 2px solid var(--primary); padding-bottom:5px; margin-top:30px;">資料提供・参考資料</h3>
+            <ul style="padding-left: 20px; line-height: 1.8;">
+                <li>東北大学大学院医学系研究科公衆衛生学分野：被災者の生活支援・健康管理に関する資料</li>
+                <li>内閣府：避難所におけるトイレの確保・管理ガイドライン</li>
+                <li>厚生労働省：災害時における健康危機管理</li>
+                <li>防災グッズリスト</li>
+            </ul>
+
+            <h3 style="color:var(--primary); border-bottom: 2px solid var(--primary); padding-bottom:5px; margin-top:30px;">現地ヒアリング・協力</h3>
+            <ul style="padding-left: 20px; line-height: 1.8;">
+                <li>被災地の医師・薬剤師・看護師へのヒアリング調査（地域医療、服薬支援、避難所環境に関する聞き取り）</li>
+                <li>金沢大学</li>
+            </ul>
+
+            <div style="margin-top: 40px; padding: 15px; background: #fff3e0; border-left: 4px solid #f57c00; font-size: 0.85rem; line-height: 1.6; color: #d84315;">
+                ※本教材は、授業内での学習・討議を目的とした試作版です。<br>
+                ※本教材は、実際の災害時の行動を一律に指示するものではありません。実際の災害時には、自治体・気象庁・消防・医療機関などの最新情報に従ってください。
+            </div>
+            
         </div>
     </div>
 
