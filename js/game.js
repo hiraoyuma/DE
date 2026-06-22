@@ -19,15 +19,18 @@ const Game = {
 
     toHome() { this.switchScreen('home-screen'); },
     
-    // ▼新設：クレジット画面への遷移
     toCredit() { this.switchScreen('credit-screen'); },
     
     toSelect() {
-        if(AudioSys && AudioSys.ctx && AudioSys.ctx.state === 'suspended'){
-            AudioSys.ctx.resume();
-        } else {
-            AudioSys.init();
+        // エラー防止の改良：もし音声ファイルが無かった場合でもゲームを止めない
+        if (typeof AudioSys !== 'undefined') {
+            if (AudioSys.ctx && AudioSys.ctx.state === 'suspended') {
+                AudioSys.ctx.resume();
+            } else {
+                AudioSys.init();
+            }
         }
+        
         this.renderStageList();
         this.switchScreen('select-screen');
     },
@@ -154,7 +157,7 @@ const Game = {
             alertEl.style.display = 'block';
         }
 
-        if (scene.se) AudioSys.playSE(scene.se);
+        if (typeof AudioSys !== 'undefined' && scene.se) AudioSys.playSE(scene.se);
 
         const optsArea = document.getElementById('options-list');
         optsArea.innerHTML = '';
@@ -210,7 +213,7 @@ const Game = {
                 badgeText = '正解';
             }
 
-            AudioSys.playSE(se);
+            if (typeof AudioSys !== 'undefined') AudioSys.playSE(se);
             this.showToast(msg, fbType); 
 
             const optsArea = document.getElementById('options-list');
@@ -343,8 +346,6 @@ const Game = {
             div.innerHTML = html;
             list.appendChild(div);
         });
-        
-        // ※エラーの原因だった「参考文献」のコードはすべて削除し、index.htmlのクレジット画面に移行しました。
     }
 };
 
