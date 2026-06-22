@@ -1,10 +1,9 @@
 const Game = {
     state: { hp: 100, sanit: 100, trust: 50, history: [], flags: {} },
     currentStageKey: null,
-    currentSceneId: null, // 現在のシーンIDを保持
+    currentSceneId: null, 
     clearedStages: [],
     
-    // タイマー関連変数
     timerInterval: null,
     timeLeft: 15,
 
@@ -19,6 +18,9 @@ const Game = {
     },
 
     toHome() { this.switchScreen('home-screen'); },
+    
+    // ▼新設：クレジット画面への遷移
+    toCredit() { this.switchScreen('credit-screen'); },
     
     toSelect() {
         if(AudioSys && AudioSys.ctx && AudioSys.ctx.state === 'suspended'){
@@ -62,19 +64,16 @@ const Game = {
         document.getElementById('control-panel').classList.remove('result-mode');
         this.isProcessing = false;
 
-        // ゲーム開始前にブリーフィング画面を表示する
         const bContent = document.getElementById('briefing-content');
         bContent.innerHTML = stageData.briefing || "（状況説明がありません）";
         this.switchScreen('briefing-screen');
     },
 
-    // ブリーフィング後のミッション開始処理
     startSceneAfterBriefing() {
         this.switchScreen('game-screen');
         this.renderScene(ScenarioData[this.currentStageKey].startScene);
     },
 
-    // タイマー管理処理
     startTimer() {
         this.clearTimer();
         this.timeLeft = 15;
@@ -106,7 +105,6 @@ const Game = {
         if(text) text.innerText = `${this.timeLeft}秒`;
     },
 
-    // 時間切れ時の処理
     handleTimeout() {
         this.clearTimer();
         if (this.isProcessing) return;
@@ -114,17 +112,15 @@ const Game = {
         const stageData = ScenarioData[this.currentStageKey];
         const scene = stageData.scenes[this.currentSceneId];
         
-        // 誤答（isGoodがfalse）の選択肢を探して自動選択させる
         let wrongOpt = scene.options.find(opt => !opt.fb.isGood);
-        if (!wrongOpt) wrongOpt = scene.options[0]; // 万が一誤答がない場合のフェールセーフ
+        if (!wrongOpt) wrongOpt = scene.options[0]; 
         
-        // タイムアウトフラグ (isTimeout = true) をつけてresolveへ渡す
         this.resolveOption(wrongOpt, true);
     },
 
     renderScene(sceneId) {
-        this.currentSceneId = sceneId; // 現在のシーンを保存
-        this.clearTimer(); // 新しいシーンに入ったらタイマーをリセット
+        this.currentSceneId = sceneId; 
+        this.clearTimer(); 
 
         const stageData = ScenarioData[this.currentStageKey];
         const scene = stageData.scenes[sceneId];
@@ -171,7 +167,6 @@ const Game = {
                 btn.onclick = () => this.resolveOption(opt);
                 optsArea.appendChild(btn);
             });
-            // 選択肢がある場合のみタイマーを開始
             this.startTimer();
         } else if (scene.next) {
             const btn = document.createElement('div');
@@ -182,11 +177,10 @@ const Game = {
         }
     },
 
-    // 引数に isTimeout フラグを追加
     resolveOption(opt, isTimeout = false) {
         if (this.isProcessing) return;
         this.isProcessing = true;
-        this.clearTimer(); // 選択した瞬間にタイマーを止める
+        this.clearTimer(); 
 
         if(opt.hp) this.state.hp += opt.hp;
         if(opt.sanit) this.state.sanit += opt.sanit;
@@ -194,17 +188,14 @@ const Game = {
         this.updateStatusUI();
 
         if (opt.fb) {
-            // 履歴に保存（時間切れの場合は「【時間切れ】」をプレフィックスにつける）
             this.state.history.push({ choice: isTimeout ? `【時間切れ】 ${opt.text}` : opt.text, fb: opt.fb });
             
-            // 判定とバッジの初期化
             let fbType = 'bad';
             let msg = "BAD CHOICE...";
             let se = 'bad';
             let badgeColor = '#d32f2f';
             let badgeText = '危険';
 
-            // 時間切れの場合は強制的にCAUTIONスタイル（オレンジ）
             if (isTimeout || opt.fb.isWarning) {
                 fbType = 'warning';
                 msg = isTimeout ? "TIME UP!" : "CAUTION!";
@@ -222,7 +213,6 @@ const Game = {
             AudioSys.playSE(se);
             this.showToast(msg, fbType); 
 
-            // 選択直後のインライン・フィードバック画面生成
             const optsArea = document.getElementById('options-list');
             let html = `
                 <div class="fb-card ${fbType}" style="margin-top:0; padding:15px; box-shadow:none; border:2px solid ${badgeColor};">
@@ -233,7 +223,6 @@ const Game = {
                     <div class="fb-text" style="font-weight:bold; margin-bottom:10px;">${opt.fb.reason}</div>
             `;
 
-            // 正解(isGood:true)以外の場合は、もし間違っていたら＆深掘り知識もすぐに表示する
             if (!opt.fb.isGood) {
                 if (opt.fb.ifWrong) {
                     html += `
@@ -252,7 +241,6 @@ const Game = {
             }
             html += `</div>`;
             
-            // 次へ進むためのボタン
             html += `<div class="option-btn" style="text-align:center; background:var(--header-bg); color:white; margin-top:10px;" id="btn-next-scene">次のシーンへ</div>`;
             
             optsArea.innerHTML = html;
@@ -263,7 +251,6 @@ const Game = {
             };
 
         } else {
-            // FBがない場合（次へ進むだけのシーンなど）
             setTimeout(() => {
                 this.renderScene(opt.next);
                 this.isProcessing = false;
@@ -308,13 +295,11 @@ const Game = {
         const list = document.getElementById('feedback-list');
         list.innerHTML = '';
 
-        // リザルトのフィードバック一覧（直後に出した内容の振り返りとしてそのまま残します）
         this.state.history.forEach((h, i) => {
             let cardClass = 'bad';
             let badgeColor = '#d32f2f'; 
             let badgeText = '危険';
             
-            // 時間切れ（historyのchoice文字列で判定）または Warning の場合
             if (h.choice.includes("【時間切れ】") || h.fb.isWarning) {
                 cardClass = 'warning';
                 badgeColor = '#f57c00'; 
@@ -358,33 +343,8 @@ const Game = {
             div.innerHTML = html;
             list.appendChild(div);
         });
-
-        // 参考文献
-        const refDiv = document.createElement('div');
-        refDiv.className = 'fb-card';
-        refDiv.style.borderLeft = "5px solid #546e7a"; 
-        refDiv.innerHTML = `
-            <div class="fb-header" style="color:#546e7a;">📚 参考資料・出典</div>
-            <div class="fb-text" style="font-size:0.8rem; line-height:1.8;">
-                <ul style="padding-left:20px; margin:0;">
-                    <li><b>公的資料・専門資料</b></li>
-                    <li>・内閣府：避難所におけるトイレの確保・管理ガイドライン</li>
-                    <li>・厚生労働省：災害時における健康危機管理</li>
-                    <li>・東北大学大学院：被災者の生活支援・健康管理に関する資料</li>
-                    <br>
-                    <li><b>現地ヒアリング</b></li>
-                    <li>・被災地の医師・薬剤師・看護師へのヒアリング調査</li>
-                    <li>・地域医療、服薬支援、避難所環境に関する聞き取り</li>
-                    <br>
-                    <li><b>報道・記録資料</b></li>
-                    <li>・令和6年能登半島地震に関する報道資料</li>
-                    <li>・令和6年奥能登豪雨に関する報道資料</li>
-                    <li><b>・防災グッズ画像引用</b></li>
-                    <li>（https://www.cainz.com/kurashare/product-lists/2987）</li>
-                </ul>
-            </div>
-        `;
-        list.appendChild(refDiv);
+        
+        // ※エラーの原因だった「参考文献」のコードはすべて削除し、index.htmlのクレジット画面に移行しました。
     }
 };
 
