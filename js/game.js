@@ -379,7 +379,8 @@ const Game = {
                     <li><b>報道・記録資料</b></li>
                     <li>・令和6年能登半島地震に関する報道資料</li>
                     <li>・令和6年奥能登豪雨に関する報道資料</li>
-                    <li>・株式会社カインズ：防災グッズリスト（https://www.cainz.com/kurashare/product-lists/2987）</li>
+                    <li><b>・防災グッズ画像引用</b></li>
+                    <li>（https://www.cainz.com/kurashare/product-lists/2987）</li>
                 </ul>
             </div>
         `;
