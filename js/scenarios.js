@@ -7,7 +7,7 @@ const ScenarioData = {
         scenes: {
             's1_1': {
                 img: 'image/s1-1.jpg', se: 'alert', anim: 'shake',
-                phase: '発災直後', time: '1/1 16:10',
+                phase: '発災直後', 
                 text: "激しい縦揺れの後、立っていられないほどの横揺れが始まった！家具が倒れる音が響く。",
                 speaker: "地震発生",
                 options: [
@@ -27,7 +27,7 @@ const ScenarioData = {
             },
             's1_2': {
                 img: 'image/s1-2.jpg', se: 'alert', alert: '大津波警報',
-                phase: '避難判断', time: '1/1 16:15',
+                phase: '避難判断', 
                 text: "地震の直後、大津波警報が鳴り響いています。あなたは海に近い地域におり、父は「過去の津波でもここまで来たことは一度もない」と言って避難をためらっています。",
                 speaker: "緊急速報",
                 options: [
@@ -63,7 +63,7 @@ const ScenarioData = {
                 ]
             },
             's1_4': {
-                img: 'image/s1-4.jpg', phase: '避難所の夜', time: '1/1 20:00',
+                img: 'image/s1-4.jpg', phase: '避難所の夜', 
                 text: "なんとか避難所に到着しました。しかし停電が続いており、スマートフォンの充電は残り10％です。充電できる場所も限られていて、家族や友人への連絡、災害情報の確認にも不安があります。",
                 options: [
                     { 
@@ -109,7 +109,7 @@ const ScenarioData = {
         startScene: 's2_1',
         scenes: {
             's2_1': {
-                img: 'image/s2-1.jpg', phase: '寒冷対策', time: '1/3 22:00',
+                img: 'image/s2-1.jpg', phase: '寒冷対策',
                 text: "発災から3日目の夜です。避難所は寒く、十分な暖房もありません。体の震えが止まらず、手元には使えるカイロが1枚だけあります。どこに貼ればよいでしょうか？",
                 options: [
                     { 
