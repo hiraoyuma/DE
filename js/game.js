@@ -22,7 +22,6 @@ const Game = {
     toCredit() { this.switchScreen('credit-screen'); },
     
     toSelect() {
-        // エラー防止の改良：もし音声ファイルが無かった場合でもゲームを止めない
         if (typeof AudioSys !== 'undefined') {
             if (AudioSys.ctx && AudioSys.ctx.state === 'suspended') {
                 AudioSys.ctx.resume();
@@ -346,6 +345,22 @@ const Game = {
             div.innerHTML = html;
             list.appendChild(div);
         });
+
+        // ▼追加：ステージごとの総評を表示する機能
+        const stageData = ScenarioData[this.currentStageKey];
+        if (stageData.summary) {
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = 'fb-card';
+            // 青色の枠線と薄い青背景で目立たせる
+            summaryDiv.style.border = "2px solid #1976d2";
+            summaryDiv.style.backgroundColor = "#e3f2fd";
+            summaryDiv.innerHTML = `
+                <div class="fb-text" style="line-height: 1.8; color: #0d47a1;">
+                    ${stageData.summary}
+                </div>
+            `;
+            list.appendChild(summaryDiv);
+        }
     }
 };
 
